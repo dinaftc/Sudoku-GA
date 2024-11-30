@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, render_template
-from sudoku_solver import genetic_algorithm
+from sudoku_solver import solve
 import numpy as np
 import logging
 
@@ -27,17 +27,12 @@ def solve_sudoku():
         return jsonify({'error': 'Invalid Sudoku grid'}), 400
 
     try:
-        # Convert to numpy array
-        puzzle_array = np.array(puzzle)
-        if not np.all((puzzle_array >= 0) & (puzzle_array <= 9)):
-            return jsonify({'error': 'Puzzle values must be integers between 0 and 9'}), 400
-
         # Solve the puzzle
-        solution = genetic_algorithm(puzzle_array)
+        solution = solve(puzzle)
 
         if solution is not None:
             logging.debug("Solved Sudoku successfully.")
-            return jsonify({'solution': solution.tolist()})
+            return jsonify({'solution': solution})
         else:
             logging.error("No solution found.")
             return jsonify({'error': 'No solution found'}), 500
