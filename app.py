@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, render_template
-from sudoku_solver import solve
+from sudoku_solver import SudokuGA
 import numpy as np
 import logging
 
@@ -28,11 +28,16 @@ def solve_sudoku():
 
     try:
         # Solve the puzzle
-        solution = solve(puzzle)
-
+        solver = SudokuGA(puzzle)
+        solution = solver.solve()
+    
         if solution is not None:
+            print(np.array(solution))
+            solution = np.array(solution)
+            solution_list = solution.tolist()
+
+            return jsonify({'solution': solution_list}), 200
             logging.debug("Solved Sudoku successfully.")
-            return jsonify({'solution': solution})
         else:
             logging.error("No solution found.")
             return jsonify({'error': 'No solution found'}), 500
